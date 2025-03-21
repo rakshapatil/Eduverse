@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Bee - Bee Spelling</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-color: #fce4ec;
+            padding: 20px;
+        }
+        .game-container {
+            background: #fff3cd;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            margin: auto;
+            transition: transform 0.2s;
+        }
+        .game-container:hover {
+            transform: scale(1.02);
+        }
+        button {
+            padding: 15px;
+            margin: 12px;
+            border: none;
+            background: #ff4081;
+            color: white;
+            cursor: pointer;
+            border-radius: 12px;
+            font-size: 18px;
+            transition: background 0.3s, transform 0.1s;
+        }
+        button:hover {
+            background: #e91e63;
+            transform: scale(1.05);
+        }
+        input {
+            padding: 12px;
+            width: 85%;
+            margin-top: 12px;
+            border: 3px solid #ff4081;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .level {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ff4081;
+        }
+        .story {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .bee-image {
+            width: 200px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="read.html" 
+    style="position: absolute; top: 20px; left: 20px; background-color: #fa81bf; color: white; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: background-color 0.3s;"
+    onmouseover="this.style.backgroundColor='#4fc3f7';" 
+    onmouseout="this.style.backgroundColor='#81d4fa';">
+    Back
+ </a>
+
+    <script>
+        let playerName = localStorage.getItem("playerName");
+        if (!playerName) {
+            playerName = prompt("Enter your name:");
+            localStorage.setItem("playerName", playerName);
+        }
+    </script>
+    <div class="game-container">
+        <h2 style="font-size: 28px;">Bee Spelling</h2>
+        <p class="level">Level: <span id="level">1</span> - <span id="theme">Jungle Adventure</span></p>
+        <p class="story" id="storyText">You are deep in the jungle, searching for hidden treasures. Spell the words correctly to move forward!</p>
+        <img src="bee.png" id="playWord" class="bee-image" alt="Play Word">
+        <input type="text" id="userInput" placeholder="Type the word here...">
+        <button id="checkSpelling">Check</button>
+        <p id="result"></p>
+        <p id="score">Score: 0</p>
+    </div>
+
+    <script>
+        const levels = [
+            { theme: "Jungle Adventure", story: "You are deep in the jungle, searching for hidden treasures.", words: ["tiger", "banana", "parrot", "monkey", "elephant"] },
+            { theme: "Space Mission", story: "You are an astronaut traveling to Mars!", words: ["rocket", "planet", "asteroid", "galaxy", "comet"] },
+            { theme: "Ocean Expedition", story: "You are exploring the deep sea for lost artifacts.", words: ["whale", "coral", "submarine", "dolphin", "octopus"] },
+            { theme: "Dinosaur Era", story: "Travel back in time and discover dinosaurs!", words: ["t-rex", "triceratops", "raptor", "stegosaurus", "fossil"] },
+            { theme: "Magical Kingdom", story: "Enter a land of wizards and dragons!", words: ["wizard", "dragon", "castle", "magic", "potion"] }
+        ];
+        
+        let currentLevel = 0;
+        let score = 0;
+        let words = levels[currentLevel].words;
+        let currentWord = words[Math.floor(Math.random() * words.length)];
+        let incorrectAttempts = 0;
+
+        const playWordImg = document.getElementById("playWord");
+        const checkBtn = document.getElementById("checkSpelling");
+        const userInput = document.getElementById("userInput");
+        const resultText = document.getElementById("result");
+        const levelDisplay = document.getElementById("level");
+        const themeDisplay = document.getElementById("theme");
+        const storyText = document.getElementById("storyText");
+        const scoreDisplay = document.getElementById("score");
+
+        function nextLevel() {
+            if (currentLevel < levels.length - 1) {
+                currentLevel++;
+                words = levels[currentLevel].words;
+                currentWord = words[Math.floor(Math.random() * words.length)];
+                incorrectAttempts = 0;
+                levelDisplay.textContent = currentLevel + 1;
+                themeDisplay.textContent = levels[currentLevel].theme;
+                storyText.textContent = levels[currentLevel].story;
+            } else {
+                alert("Congratulations, " + playerName + "! You've completed all levels!");
+            }
+        }
+
+        playWordImg.addEventListener("click", () => {
+            let speech = new SpeechSynthesisUtterance(currentWord);
+            speech.lang = "en-US";
+            window.speechSynthesis.speak(speech);
+        });
+
+        checkBtn.addEventListener("click", () => {
+            if (userInput.value.toLowerCase() === currentWord) {
+                resultText.textContent = "✅ Correct!";
+                resultText.style.color = "green";
+                incorrectAttempts = 0;
+                score += 10;
+                scoreDisplay.textContent = "Score: " + score;
+                setTimeout(() => nextLevel(), 1000);
+            } else {
+                incorrectAttempts++;
+                if (incorrectAttempts >= 3) {
+                    resultText.textContent = `❌ The correct word is: ${currentWord}`;
+                    resultText.style.color = "red";
+                    setTimeout(() => nextLevel(), 2000);
+                } else {
+                    resultText.textContent = "❌ Try again!";
+                    resultText.style.color = "red";
+                }
+            }
+            userInput.value = "";
+        });
+    </script>
+</body>
+</html>

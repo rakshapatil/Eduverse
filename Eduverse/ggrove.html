@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Grove - Sentence Safari</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to top, #a7ffeb, #e0f7fa);
+      text-align: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #2e7d32;
+      text-shadow: 1px 1px #a5d6a7;
+      margin-bottom: 10px;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      to { transform: translateY(5px); }
+    }
+
+    #game-container, #drop-zone {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px;
+      flex-wrap: wrap;
+    }
+
+    .word {
+      padding: 12px 18px;
+      background-color: #fff176;
+      border: 2px solid #fdd835;
+      border-radius: 12px;
+      cursor: grab;
+      font-size: 18px;
+      transition: transform 0.3s, background-color 0.3s;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .word:hover {
+      transform: scale(1.1) rotate(3deg);
+      background-color: #ffee58;
+    }
+
+    #drop-zone {
+      min-height: 80px;
+      background-color: #fffde7;
+      border: 3px dashed #fbc02d;
+      border-radius: 15px;
+      padding: 15px;
+      min-width: 320px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    #check-btn {
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #81c784;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #check-btn:hover {
+      background-color: #66bb6a;
+    }
+
+    #feedback {
+      font-weight: bold;
+      font-size: 20px;
+      margin-top: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #stars {
+      margin-top: 10px;
+      font-size: 28px;
+      color: gold;
+    }
+
+    #score-display {
+      font-size: 20px;
+      margin-top: 10px;
+      color: #0077b6;
+    }
+
+    .speech-bubble {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      display: inline-block;
+      border: 2px solid #81d4fa;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="read.html" 
+  style="position: absolute; top: 20px; left: 20px; background-color: #81d4fa; color: white; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: bold; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: background-color 0.3s;"
+  onmouseover="this.style.backgroundColor='#4fc3f7';" 
+  onmouseout="this.style.backgroundColor='#81d4fa';">
+  ⬅️ Back
+</a>
+
+  <h1>🌳 Grammar Grove - Sentence Safari</h1>
+  <div class="speech-bubble" id="mascot-speech">Let's build a sentence!</div>
+
+  <p>Drag the words into the correct order to fix the sentence!</p>
+
+  <div id="score-display">Score: 0</div>
+
+  <div id="game-container"></div>
+
+  <div id="drop-zone"></div>
+
+  <button id="check-btn">Check Sentence</button>
+  <p id="feedback"></p>
+  <div id="stars"></div>
+
+  <audio id="success-sound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3"></audio>
+  <audio id="fail-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+  <script>
+    const originalSentences = [
+      { words: ['The', 'sky', 'is', 'blue'], correct: ['The', 'sky', 'is', 'blue'] },
+      { words: ['I', 'ate', 'an', 'apple'], correct: ['I', 'ate', 'an', 'apple'] },
+      { words: ['She', 'reads', 'many', 'books'], correct: ['She', 'reads', 'many', 'books'] },
+      { words: ['Fish', 'swims', 'in', 'water'], correct: ['Fish', 'swims', 'in', 'water'] }
+    ];
+
+    let sentences = [];
+    let currentIndex = 0;
+    let starsEarned = 0;
+    let score = 0;
+    let wrongAttempts = 0;
+    let currentSentence = null;
+
+    const gameContainer = document.getElementById('game-container');
+    const dropZone = document.getElementById('drop-zone');
+    const feedback = document.getElementById('feedback');
+    const stars = document.getElementById('stars');
+    const checkBtn = document.getElementById('check-btn');
+    const scoreDisplay = document.getElementById('score-display');
+    const mascotSpeech = document.getElementById('mascot-speech');
+    const successSound = document.getElementById('success-sound');
+    const failSound = document.getElementById('fail-sound');
+
+    function shuffleArray(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.pitch = 1.2;
+      utterance.rate = 1;
+      speechSynthesis.speak(utterance);
+    }
+
+    function updateScoreDisplay() {
+      scoreDisplay.innerText = `Score: ${score}`;
+    }
+
+    function loadLevel() {
+      if (currentIndex >= sentences.length) {
+        feedback.innerText = '🏆 You completed all levels! Restarting...';
+        mascotSpeech.innerText = 'Amazing! You did it!';
+        speak('Congratulations! You completed all levels!');
+        stars.innerText = '';
+        score = 0;
+        starsEarned = 0;
+        currentIndex = 0;
+        sentences = shuffleArray([...originalSentences]);
+        updateScoreDisplay();
+        setTimeout(() => {
+          feedback.innerText = '';
+          mascotSpeech.innerText = 'Let’s build a sentence!';
+          loadLevel();
+        }, 3000);
+        return;
+      }
+
+      gameContainer.innerHTML = '';
+      dropZone.innerHTML = '';
+      feedback.innerText = '';
+      mascotSpeech.innerText = `Level ${currentIndex + 1}: Drag words!`;
+
+      currentSentence = sentences[currentIndex];
+      const shuffledWords = shuffleArray([...currentSentence.words]);
+
+      speak(`Level ${currentIndex + 1}. Drag the words to form a sentence.`);
+      updateScoreDisplay();
+
+      shuffledWords.forEach(word => {
+        const wordDiv = document.createElement('div');
+        wordDiv.className = 'word';
+        wordDiv.innerText = word;
+        wordDiv.setAttribute('draggable', 'true');
+        wordDiv.addEventListener('dragstart', dragStart);
+        gameContainer.appendChild(wordDiv);
+      });
+    }
+
+    function dragStart(e) {
+      const wordText = e.target.innerText;
+      speak(wordText);
+      e.dataTransfer.setData('text/plain', wordText);
+    }
+
+    dropZone.addEventListener('dragover', e => e.preventDefault());
+
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      const text = e.dataTransfer.getData('text/plain');
+      const draggedWord = Array.from(gameContainer.children).find(word => word.innerText === text);
+      if (draggedWord) {
+        gameContainer.removeChild(draggedWord);
+
+        const newWord = document.createElement('div');
+        newWord.className = 'word';
+        newWord.innerText = text;
+        newWord.setAttribute('draggable', 'true');
+        newWord.addEventListener('dragstart', dragStart);
+        dropZone.appendChild(newWord);
+      }
+    });
+
+    checkBtn.addEventListener('click', () => {
+      const arrangedWords = Array.from(dropZone.children).map(w => w.innerText);
+      const correct = currentSentence.correct;
+
+      if (arrangedWords.join(' ') === correct.join(' ')) {
+        feedback.innerText = `✅ Correct! Well done!`;
+        feedback.style.color = 'green';
+        mascotSpeech.innerText = 'Yay! You got it!';
+        speak('Correct! Great job!');
+        successSound.play();
+        starsEarned++;
+        score += 10;
+        wrongAttempts = 0;
+        updateScoreDisplay();
+        stars.innerText = '⭐'.repeat(starsEarned);
+        currentIndex++;
+        setTimeout(() => loadLevel(), 2000);
+      } else {
+        feedback.innerText = '❌ Incorrect! Try again.';
+        feedback.style.color = 'red';
+        mascotSpeech.innerText = 'Oops! Let’s try again.';
+        speak('Oops! Try again!');
+        failSound.play();
+        wrongAttempts++;
+
+        const wordsToMoveBack = Array.from(dropZone.children).map(div => div.innerText);
+        dropZone.innerHTML = '';
+        wordsToMoveBack.forEach(wordText => {
+          const wordDiv = document.createElement('div');
+          wordDiv.className = 'word';
+          wordDiv.innerText = wordText;
+          wordDiv.setAttribute('draggable', 'true');
+          wordDiv.addEventListener('dragstart', dragStart);
+          gameContainer.appendChild(wordDiv);
+        });
+
+        if (wrongAttempts >= 3) {
+          feedback.innerText = '🔄 Too many wrong tries! Restarting!';
+          mascotSpeech.innerText = 'Don’t worry, try again!';
+          speak('Too many wrong tries! Restarting.');
+          score = 0;
+          starsEarned = 0;
+          wrongAttempts = 0;
+          currentIndex = 0;
+          stars.innerText = '';
+          updateScoreDisplay();
+          sentences = shuffleArray([...originalSentences]);
+          setTimeout(() => {
+            feedback.innerText = '';
+            mascotSpeech.innerText = 'Let’s build a sentence!';
+            loadLevel();
+          }, 3000);
+        }
+      }
+    });
+
+    // Start game
+    sentences = shuffleArray([...originalSentences]);
+    loadLevel();
+  </script>
+</body>
+</html>

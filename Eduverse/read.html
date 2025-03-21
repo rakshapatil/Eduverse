@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read - Eduverse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefefe;
+            text-align: center;
+            padding: 5vw;
+        }
+
+        h1 {
+            font-size: 8vw;
+            margin-bottom: 30px;
+            color: #4b0082;
+        }
+
+        .section-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: #f0f0f0;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 25px rgba(75, 0, 130, 0.4);
+        }
+
+        .section img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            padding: 20px;
+            color: #4b0082;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .section h2 {
+                font-size: 1.5rem;
+            }
+
+            .section img {
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section h2 {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+
+            .section img {
+                height: 120px;
+            }
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #90e0ef;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #48cae4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Read</h1>
+    <div class="section-container">
+        <a href="ggrove.html" class="box">
+            <div class="section">
+                <img src="grammergrove.png" alt="Grammar Grove">
+                <h2>Gramner Grove</h2>
+            </div>
+        </a>
+
+        <a href="1.html" class="box">
+            <div class="section">
+                <img src="Eduspeak.png" alt="EduSpeak">
+                <h2>EduSpeak</h2>
+            </div>
+        </a>
+
+        <a href="bee.html" class="box">
+            <div class="section">
+                <img src="beespell.png" alt="bee spell image">
+                <h2>Bee Spelling</h2>
+            </div>
+        </a>
+
+
+    </div>
+
+    <button onclick="goBackToHome()">Back to Home</button>
+
+    <script>
+        function goBackToHome() {
+            window.location.href ="index.html";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Equations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #ffcc00, #ff6600);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 500px;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        .equation {
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+        .options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .option {
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 10px;
+            width: 120px;
+            margin: 10px;
+        }
+        .option:hover {
+            background: #0056b3;
+        }
+        .correct {
+            background-color: lightgreen;
+        }
+        .wrong {
+            background-color: red;
+        }
+        #feedback {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .buttons {
+            margin-top: 30px;
+        }
+        .button {
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 10px;
+            width: 180px;
+            margin: 10px;
+        }
+        .button:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+        .score {
+            font-size: 28px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Equations</h1>
+        <p class="equation" id="equation"></p>
+        <div class="options" id="optionsContainer"></div>
+        <p id="feedback"></p>
+        <p class="score" id="scoreDisplay">Score: 0</p>
+        <div class="buttons">
+            <button class="button" onclick="goBack()">Back</button>
+            <button class="button" id="nextButton" onclick="generateEquation()" disabled>Next</button>
+        </div>
+    </div>
+    <script>
+        let level = 1;
+        let wrongAttempts = 0;
+        let score = 0;
+
+        function generateEquation() {
+            let a = Math.floor(Math.random() * (10 * level)) + 1;
+            let b = Math.floor(Math.random() * (10 * level)) + 1;
+            let correctAnswer;
+            let operation;
+
+            if (level % 3 === 1) {
+                operation = '+';
+                correctAnswer = Math.floor(Math.random() * 21) - 10;
+            } else if (level % 3 === 2) {
+                operation = '-';
+                correctAnswer = Math.floor(Math.random() * 21) - 10;
+            } else {
+                operation = '*';
+                correctAnswer = Math.floor(Math.random() * 11) - 5;
+            }
+
+            let c = eval(`${a} ${operation} ${correctAnswer}`);
+            document.getElementById("equation").innerText = `${a} ${operation} x = ${c}`;
+            
+            let options = [correctAnswer, correctAnswer + 1, correctAnswer - 1];
+            shuffleArray(options);
+            
+            let optionsHtml = options.map(num => `<button class='option' onclick='checkAnswer(${num}, ${correctAnswer}, this)'>${num}</button>`).join("");
+            document.getElementById("optionsContainer").innerHTML = optionsHtml;
+            document.getElementById("feedback").innerText = "";
+            document.getElementById("nextButton").disabled = true;
+            wrongAttempts = 0;
+        }
+
+        function checkAnswer(selected, correct, element) {
+            if (selected === correct) {
+                element.classList.add('correct');
+                document.getElementById("feedback").innerText = "✅ Correct!";
+                document.getElementById("nextButton").disabled = false;
+                level++;
+                score += 10;
+            } else {
+                element.classList.add('wrong');
+                setTimeout(() => element.classList.remove('wrong'), 500);
+                document.getElementById("feedback").innerText = "❌ Try Again!";
+                wrongAttempts++;
+                if (wrongAttempts >= 2) {
+                    document.getElementById("feedback").innerText = `❌ The correct answer is ${correct}.`;
+                    document.getElementById("nextButton").disabled = false;
+                }
+            }
+            document.getElementById("scoreDisplay").innerText = `Score: ${score}`;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function goBack() {
+            window.location.href = "math.html";
+        }
+
+        generateEquation();
+    </script>
+</body>
+</html>

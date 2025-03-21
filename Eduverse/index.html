@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Eduverse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .splash {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+            overflow: hidden;
+            z-index: 10;
+        }
+        .splash::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url("bg100.jpg") no-repeat center center/cover;
+            animation: zoomOut 1.5s ease-in-out, fadeOut 3s ease-in-out 1.5s;
+        }
+        @keyframes zoomOut {
+            0% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .bubble {
+            font-size: 6vw;
+            padding: 5vw 10vw;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 30px;
+            display: flex;
+            font-family: 'Cooper Black', serif;
+            position: relative;
+            z-index: 1;
+            animation: enlarge 2s ease-in-out;
+        }
+        .letter {
+            color: purple;
+            font-weight: bold;
+            font-size: 10vw;
+            display: inline-block;
+            text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.5);
+            animation: bounce 1.5s infinite alternate;
+        }
+        @keyframes enlarge {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        .home, .login-box, .signup-box {
+            display: none;
+            padding: 5vw;
+        }
+        .home h1 {
+            font-size: 8vw;
+            margin-bottom: 20px;
+            color: #4b0082;
+        }
+        .home p {
+            font-size: 5vw;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .box-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            justify-items: center;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .box {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            text-decoration: none;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+        .box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .box-text {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: background 0.3s ease;
+        }
+        .box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 25px rgba(75, 0, 130, 0.7);
+        }
+        .box:hover img {
+            transform: scale(1.05);
+        }
+        .box:hover .box-text {
+            background: rgba(75, 0, 130, 0.9);
+        }
+        .btn {
+            background: #ff6b81;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 10px;
+            transition: 0.3s;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn:hover {
+            background: #ff4757;
+            transform: scale(1.1);
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid #ff6b81;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: #ff4757;
+            transform: scale(1.05);
+        }
+        .login-box, .signup-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            width: 90%;
+            max-width: 400px;
+        }
+        .user-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #6c8aca;
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 20;
+            display: none;
+        }
+        .user-btn:hover {
+            background: #ff4757;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div class="splash">
+        <div class="bubble">
+            <span class="letter">E</span><span class="letter">d</span><span class="letter">u</span>
+            <span class="letter">v</span><span class="letter">e</span><span class="letter">r</span>
+            <span class="letter">s</span><span class="letter">e</span>
+        </div>
+    </div>
+
+    <!-- User Icon Button -->
+    <button class="user-btn" onclick="showLogin()" title="Login / Signup">
+        <i class="fas fa-user"></i>
+    </button>
+
+    <!-- Home Screen -->
+    <div class="home">
+        <h1>Eduverse</h1>
+        <p>Welcome to the Home Page</p>
+        <div class="box-container">
+            <a href="math.html" class="box">
+                <img src="math.jpg" alt="Math Icon">
+                <div class="box-text">Math</div>
+            </a>
+            <a href="read.html" class="box">
+                <img src="read.jpg" alt="Read Icon">
+                <div class="box-text">Read</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-box">
+        <h2>Login 🚀</h2>
+        <input type="text" id="username" placeholder="Enter Username">
+        <input type="password" id="password" placeholder="Enter Password">
+        <button class="btn" onclick="login()">Login</button>
+        <p>Don't have an account? <a onclick="showSignup()" style="color:#ff6b81; cursor:pointer;">Sign Up</a></p>
+        <button onclick="showHome()" class="btn">Back to Home</button>
+    </div>
+
+    <!-- Signup Form -->
+    <div class="signup-box">
+        <h2>Create Account 🎉</h2>
+        <input type="text" id="new-username" placeholder="Enter Username">
+        <input type="email" id="email" placeholder="Enter Email">
+        <input type="password" id="new-password" placeholder="Enter Password">
+        <button class="btn" onclick="signup()">Sign Up</button>
+        <p>Already have an account? <a onclick="showLogin()" style="color:#ff6b81; cursor:pointer;">Login</a></p>
+        <button onclick="showHome()" class="btn">Back to Home</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const hasVisited = sessionStorage.getItem("hasVisited");
+            const userBtn = document.querySelector(".user-btn");
+
+            if (!hasVisited) {
+                sessionStorage.setItem("hasVisited", "true");
+                setTimeout(() => {
+                    document.querySelector(".splash").style.display = "none";
+                    document.querySelector(".home").style.display = "block";
+                    userBtn.style.display = "block";
+                }, 3000);
+            } else {
+                document.querySelector(".splash").style.display = "none";
+                document.querySelector(".home").style.display = "block";
+                userBtn.style.display = "block";
+            }
+        });
+
+        function showLogin() {
+            document.querySelector('.home').style.display = 'none';
+            document.querySelector('.signup-box').style.display = 'none';
+            document.querySelector('.login-box').style.display = 'block';
+            document.querySelector('.user-btn').style.display = 'none';
+        }
+        function showSignup() {
+            document.querySelector('.home').style.display = 'none';
+            document.querySelector('.login-box').style.display = 'none';
+            document.querySelector('.signup-box').style.display = 'block';
+            document.querySelector('.user-btn').style.display = 'none';
+        }
+        function showHome() {
+            document.querySelector('.login-box').style.display = 'none';
+            document.querySelector('.signup-box').style.display = 'none';
+            document.querySelector('.home').style.display = 'block';
+            document.querySelector('.user-btn').style.display = 'block';
+        }
+
+        async function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    if (res.ok) showHome();
+}
+
+async function signup() {
+    const username = document.getElementById('new-username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('new-password').value;
+
+    const res = await fetch('/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    if (res.ok) showLogin();
+}
+
+    </script>
+</body>
+</html>

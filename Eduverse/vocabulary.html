@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary - Eduverse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0faff;
+            text-align: center;
+            padding: 5vw;
+        }
+
+        h1 {
+            font-size: 8vw;
+            color: #4b0082;
+            margin-bottom: 30px;
+        }
+
+        .vocab-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .word-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .word-card:hover {
+            transform: scale(1.05);
+        }
+
+        .word {
+            font-size: 2rem;
+            color: #4b0082;
+            margin-bottom: 10px;
+        }
+
+        .meaning {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .word {
+                font-size: 1.5rem;
+            }
+
+            .meaning {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Vocabulary Words</h1>
+    <div class="vocab-list">
+        <div class="word-card">
+            <div class="word">Apple</div>
+            <div class="meaning">A red fruit.</div>
+        </div>
+        <div class="word-card">
+            <div class="word">Ball</div>
+            <div class="meaning">A round toy to play with.</div>
+        </div>
+        <div class="word-card">
+            <div class="word">Cat</div>
+            <div class="meaning">A small pet animal.</div>
+        </div>
+        <!-- Add more vocabulary cards as needed -->
+    </div>
+</body>
+</html>

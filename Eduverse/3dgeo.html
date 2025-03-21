@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Shapes Display</title>
+    <style>
+        body { margin: 0; overflow: hidden; display: flex; flex-wrap: wrap; height: 100vh; }
+        .scene-container { width: 50%; height: 50%; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="scene-container" id="cube-container" data-url="cube.html"></div>
+    <div class="scene-container" id="sphere-container" data-url="sphere.html"></div>
+    <div class="scene-container" id="cylinder-container" data-url="cylinder.html"></div>
+    <div class="scene-container" id="cone-container" data-url="cone.html"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        function createScene(containerId, geometry, color, url, scaleX = 1, scaleY = 1, scaleZ = 1) {
+            const container = document.getElementById(containerId);
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+            container.appendChild(renderer.domElement);
+
+            const material = new THREE.MeshPhongMaterial({ color: color, shininess: 100 });
+            const shape = new THREE.Mesh(geometry, material);
+            shape.scale.set(scaleX, scaleY, scaleZ);
+            scene.add(shape);
+
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(5, 5, 5);
+            scene.add(light);
+            
+            const ambientLight = new THREE.AmbientLight(0x404040); 
+            scene.add(ambientLight);
+
+            camera.position.z = 4;
+            function animate() {
+                requestAnimationFrame(animate);
+                shape.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = 1;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+            });
+
+            container.addEventListener('click', () => {
+                window.location.href = url;
+            });
+        }
+
+        createScene('cube-container', new THREE.BoxGeometry(0.8, 2, 0.8), 0x00ff00, 'cube.html');
+        createScene('sphere-container', new THREE.SphereGeometry(0.5, 32, 32), 0xff0000, 'sphere.html', 0.8, 2, 0.8);
+        createScene('cylinder-container', new THREE.CylinderGeometry(0.5, 0.5, 3, 32), 0x0000ff, 'cylinder.html');
+        createScene('cone-container', new THREE.ConeGeometry(0.4, 2, 32), 0xffff00, 'cone.html');
+    </script>
+</body>
+</html>

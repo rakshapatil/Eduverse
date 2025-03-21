@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phonetics - Eduverse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff8f0;
+            text-align: center;
+            padding: 5vw;
+        }
+
+        h1 {
+            font-size: 8vw;
+            color: #4b0082;
+            margin-bottom: 30px;
+        }
+
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .sound-card {
+            background: #f0f0f0;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .sound-card:hover {
+            transform: scale(1.05);
+        }
+
+        .phoneme {
+            font-size: 3rem;
+            color: #4b0082;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #4b0082;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #6a0dad;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .phoneme {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Phonetics</h1>
+    <div class="sound-grid">
+        <div class="sound-card">
+            <div class="phoneme">A</div>
+            <button onclick="playSound('a')">Play</button>
+        </div>
+        <div class="sound-card">
+            <div class="phoneme">B</div>
+            <button onclick="playSound('b')">Play</button>
+        </div>
+        <div class="sound-card">
+            <div class="phoneme">C</div>
+            <button onclick="playSound('c')">Play</button>
+        </div>
+        <!-- Add more phonemes as needed -->
+    </div>
+
+    <script>
+        function playSound(letter) {
+            const audio = new Audio(`sounds/${letter}.mp3`);
+            audio.play();
+        }
+    </script>
+</body>
+</html>

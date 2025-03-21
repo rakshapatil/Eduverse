@@ -1,0 +1,158 @@
+<!-- cube.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cube</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            background-color: #1e1e2f;
+            color: white;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        #cube-container {
+            background-color: #ffcc00;
+            display: inline-block;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(255, 204, 0, 0.6);
+            margin-top: 20px;
+        }
+        h1 {
+            font-size: 36px;
+            color: #ffcc00;
+        }
+        p {
+            font-size: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #ff5733;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff3311;
+        }
+        #feedback {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 Cube Challenge 🎉</h1>
+    <p>This is a 3D Cube! Can you solve the math challenge?</p>
+    <div id="cube-container"></div>
+    <h2>Math Question 🧠</h2>
+    <p id="question">If the length of one side of a cube is 5 cm, what is its volume?</p>
+    <input type="number" id="answer" placeholder="Enter your answer">
+    <button onclick="checkAnswer()">Submit</button>
+    <p id="feedback"></p>
+    <a href="math.html" style="color: #ffcc00; font-size: 18px;">🔙 Back to Shapes</a>
+
+    <script>
+        function createCube() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(400, 400);
+            document.getElementById('cube-container').appendChild(renderer.domElement);
+
+            const geometry = new THREE.BoxGeometry(2, 1.5, 2);
+            const material = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 100 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+            
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(5, 5, 5);
+            scene.add(light);
+
+            camera.position.z = 5;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                cube.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+        createCube();
+    </script>
+    
+    <script>
+        let difficulty = 1;
+        let sideLength = 5;
+        
+        function generateQuestion() {
+    let questionType = Math.floor(Math.random() * 6); // Randomly choose a question type
+    let sideLength = Math.floor(Math.random() * (5 * difficulty)) + 2;
+    let questionText = "";
+    let correctAnswer = 0;
+
+    switch (questionType) {
+        case 0: // Volume Question
+            questionText = `If the length of one side of a cube is ${sideLength} cm, what is its volume?`;
+            correctAnswer = sideLength ** 3;
+            break;
+        case 1: // Surface Area Question
+            questionText = `If the length of one side of a cube is ${sideLength} cm, what is its surface area?`;
+            correctAnswer = 6 * (sideLength ** 2);
+            break;
+        case 2: // Perimeter Question
+            questionText = `If the length of one side of a cube is ${sideLength} cm, what is the perimeter of one face?`;
+            correctAnswer = 4 * sideLength;
+            break;
+        case 3: // Reverse Volume Question
+            let volume = sideLength ** 3;
+            questionText = `If the volume of a cube is ${volume} cm³, what is the length of one side?`;
+            correctAnswer = sideLength;
+            break;
+        case 4: // Reverse Surface Area Question
+            let surfaceArea = 6 * (sideLength ** 2);
+            questionText = `If the surface area of a cube is ${surfaceArea} cm², what is the length of one side?`;
+            correctAnswer = sideLength;
+            break;
+        case 5: // Reverse Perimeter Question
+            let perimeter = 4 * sideLength;
+            questionText = `If the perimeter of one face of a cube is ${perimeter} cm, what is the length of one side?`;
+            correctAnswer = sideLength;
+            break;
+    }
+
+    document.getElementById('question').innerText = questionText;
+    document.getElementById('question').dataset.correctAnswer = correctAnswer;
+}
+
+        
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const correctAnswer = parseInt(document.getElementById('question').dataset.correctAnswer);
+            if (userAnswer === correctAnswer) {
+                document.getElementById('feedback').innerText = "✅ Correct! Increasing difficulty...";
+                difficulty++;
+                generateQuestion();
+            } else {
+                document.getElementById('feedback').innerText = "❌ Incorrect, try again.";
+            }
+            document.getElementById('answer').value = "";
+        }
+        
+        generateQuestion();
+    </script>
+</body>
+</html>

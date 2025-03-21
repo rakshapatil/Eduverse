@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Objects</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #FF9800, #FF5722);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 800px;
+        }
+
+        .objects {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px;
+            flex-wrap: wrap;
+        }
+
+        .object {
+            width: 50px;
+            height: 50px;
+            background-size: contain;
+            display: inline-block;
+        }
+
+        .input-container {
+            margin-top: 20px;
+        }
+
+        .input-box {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-box input {
+            font-size: 24px;
+            padding: 10px;
+            width: 80px;
+            text-align: center;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #FF5722;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #FF3D00;
+        }
+
+        p {
+            font-size: 18px;
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .timer {
+            font-size: 18px;
+            color: red;
+        }
+
+        #backButton {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #backButton:hover {
+            background-color: #1976D2;
+        }
+
+        h1 {
+            border: 2px solid #FF5722;
+            padding: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Counting Objects</h1>
+        <p>Count the objects and enter the total number of each object in the input boxes!</p>
+        <div class="objects" id="objectsContainer"></div>
+
+        <!-- Dynamic input boxes for the user to type the number -->
+        <div class="input-container" id="inputContainer"></div>
+
+        <button onclick="checkAnswer()">Submit</button>
+        <button id="retryButton" style="display: none;" onclick="retry()">Retry</button>
+        <button id="nextLevelButton" style="display: none;" onclick="nextLevel()">Next Level</button>
+
+        <p id="feedback"></p>
+        <p class="score">Score: <span id="score">0</span></p>
+        <p class="timer" id="timer">Time Left: <span id="timeLeft">30</span> seconds</p>
+    </div>
+
+    <!-- Back button outside the container -->
+    <button id="backButton" onclick="goBack()">Back</button>
+
+    <script>
+        let score = 0;
+        let objectCount = Math.floor(Math.random() * 20) + 1;
+        const objectsContainer = document.getElementById('objectsContainer');
+        const inputContainer = document.getElementById('inputContainer');
+        let countdownTimer;
+        let timeLeft = 30;
+        let objectTypes = [];
+
+        function startTimer() {
+            countdownTimer = setInterval(function () {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById('timeLeft').innerText = timeLeft;
+                } else {
+                    clearInterval(countdownTimer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function generateObjects() {
+            objectsContainer.innerHTML = ''; // Clear existing objects
+            inputContainer.innerHTML = ''; // Clear existing input boxes
+
+            objectTypes = [];
+            for (let i = 0; i < objectCount; i++) {
+                // Randomly pick between ball.jpeg, bat.jpeg, and snake.jpeg
+                let objectType = Math.floor(Math.random() * 3);
+                if (objectType === 0) {
+                    objectTypes.push('ball.jpeg');
+                } else if (objectType === 1) {
+                    objectTypes.push('bat.jpeg');
+                } else {
+                    objectTypes.push('snake.jpeg');
+                }
+            }
+
+            // Display objects
+            objectTypes.forEach(type => {
+                let obj = document.createElement('div');
+                obj.className = 'object';
+                obj.style.backgroundImage = `url(${type})`;
+                objectsContainer.appendChild(obj);
+            });
+
+            // Generate input boxes for each unique object type
+            let uniqueObjects = [...new Set(objectTypes)];
+            uniqueObjects.forEach(type => {
+                let count = objectTypes.filter(obj => obj === type).length;
+
+                let inputBox = document.createElement('div');
+                inputBox.className = 'input-box';
+
+                let img = document.createElement('img');
+                img.src = type;
+                img.style.width = '40px';
+                img.style.height = '40px';
+                img.style.marginRight = '10px';
+
+                let inputField = document.createElement('input');
+                inputField.type = 'text';
+                inputField.id = `input-${type}`;
+                inputField.maxLength = '2';
+
+                let label;
+                if (type === 'ball.jpeg') {
+                    label = document.createElement('label');
+                    label.textContent = `How many balls?`;
+                } else if (type === 'snake.jpeg') {
+                    label = document.createElement('label');
+                    label.textContent = `How many snakes?`;
+                } else {
+                    label = document.createElement('label');
+                    label.textContent = `How many bats?`;
+                }
+
+                inputBox.appendChild(img);
+                inputBox.appendChild(label);
+                inputBox.appendChild(inputField);
+                inputContainer.appendChild(inputBox);
+            });
+        }
+
+        function randomizeGame() {
+            objectCount = Math.floor(Math.random() * 20) + 1;
+            generateObjects();
+        }
+
+        function timeUp() {
+            let feedbackElement = document.getElementById('feedback');
+            feedbackElement.innerText = "⏳ Time's up! Please try again.";
+            feedbackElement.style.color = 'red';
+            document.getElementById('retryButton').style.display = 'inline-block';  // Show retry button
+        }
+
+        function retry() {
+            let feedbackElement = document.getElementById('feedback');
+            feedbackElement.innerText = ''; // Clear feedback
+            document.getElementById('retryButton').style.display = 'none'; // Hide retry button
+            generateObjects(); // Retry current question
+        }
+
+        function checkAnswer() {
+            let feedbackElement = document.getElementById('feedback');
+            let correctCount = 0;
+
+            let uniqueObjects = [...new Set(objectTypes)];
+            uniqueObjects.forEach(type => {
+                let inputValue = document.getElementById(`input-${type}`).value.trim();
+                let objectTypeCount = objectTypes.filter(obj => obj === type).length;
+                
+                if (parseInt(inputValue) === objectTypeCount) {
+                    correctCount++;
+                } else {
+                    document.getElementById(`input-${type}`).value = '';  // Clear wrong answer
+                }
+            });
+
+            if (correctCount === uniqueObjects.length) {
+                score++;
+                feedbackElement.innerText = `✅ Correct! You counted the objects correctly.`;
+                feedbackElement.style.color = 'green';
+                document.getElementById('nextLevelButton').style.display = 'inline-block';
+            } else {
+                feedbackElement.innerText = `❌ Incorrect! Try again!`;
+                feedbackElement.style.color = 'red';
+                document.getElementById('retryButton').style.display = 'inline-block';
+            }
+
+            document.getElementById('score').innerText = score;
+        }
+
+        function nextLevel() {
+            document.getElementById('nextLevelButton').style.display = 'none';
+            randomizeGame();
+        }
+
+        function goBack() {
+            window.location.href = "mini-game.html";  // Navigate to mini-game.html
+        }
+
+        randomizeGame();
+        startTimer();
+    </script>
+</body>
+</html>

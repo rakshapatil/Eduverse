@@ -1,0 +1,154 @@
+<!-- sphere.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sphere</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            background-color: #1e1e2f;
+            color: white;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        #sphere-container {
+            background-color: #ffcc00;
+            display: inline-block;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(255, 204, 0, 0.6);
+            margin-top: 20px;
+        }
+        h1 {
+            font-size: 36px;
+            color: #ffcc00;
+        }
+        p {
+            font-size: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #ff5733;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff3311;
+        }
+        #feedback {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 Sphere Challenge 🌍</h1>
+    <p>This is a 3D Sphere! Can you solve the math challenge?</p>
+    <div id="sphere-container"></div>
+    <h2>Math Question 🧠</h2>
+    <p id="question"></p>
+    <input type="number" id="answer" placeholder="Enter your answer">
+    <button onclick="checkAnswer()">Submit</button>
+    <p id="feedback"></p>
+    <a href="math.html" style="color: #ffcc00; font-size: 18px;">🔙 Back to Shapes</a>
+
+    <script>
+        function createSphere() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(400, 400);
+            document.getElementById('sphere-container').appendChild(renderer.domElement);
+
+            const geometry = new THREE.SphereGeometry(2, 32, 32);
+            const material = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 100 });
+            const sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+            
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(5, 5, 5);
+            scene.add(light);
+
+            camera.position.z = 6;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                sphere.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+        createSphere();
+    </script>
+    
+    <script>
+        let difficulty = 1;
+        let radius = 4;
+
+        function generateQuestion() {
+    let questionType = Math.floor(Math.random() * 5); // Randomly choose a question type
+    let radius = Math.floor(Math.random() * (5 * difficulty)) + 2;
+    let questionText = "";
+    let correctAnswer = 0;
+    const pi = Math.PI;
+
+    switch (questionType) {
+        case 0: // Volume Question
+            questionText = `If a sphere has a radius of ${radius} cm, what is its volume?`;
+            correctAnswer = (4 / 3) * pi * Math.pow(radius, 3);
+            break;
+        case 1: // Surface Area Question
+            questionText = `If a sphere has a radius of ${radius} cm, what is its surface area?`;
+            correctAnswer = 4 * pi * Math.pow(radius, 2);
+            break;
+        case 2: // Perimeter of Great Circle (Circumference) Question
+            questionText = `If a sphere has a radius of ${radius} cm, what is the circumference of its largest circle (great circle)?`;
+            correctAnswer = 2 * pi * radius;
+            break;
+        case 3: // Reverse Volume Question
+            let volume = (4 / 3) * pi * Math.pow(radius, 3);
+            questionText = `If the volume of a sphere is ${volume.toFixed(2)} cm³, what is its radius?`;
+            correctAnswer = Math.cbrt((3 * volume) / (4 * pi)); // Cube root for radius
+            break;
+        case 4: // Reverse Surface Area Question
+            let surfaceArea = 4 * pi * Math.pow(radius, 2);
+            questionText = `If the surface area of a sphere is ${surfaceArea.toFixed(2)} cm², what is its radius?`;
+            correctAnswer = Math.sqrt(surfaceArea / (4 * pi)); // Square root for radius
+            break;
+    }
+
+    document.getElementById('question').innerText = questionText;
+    document.getElementById('question').dataset.correctAnswer = correctAnswer.toFixed(2);
+}
+
+        
+        function checkAnswer() {
+            const userAnswer = parseFloat(document.getElementById('answer').value);
+            const correctAnswer = parseFloat(document.getElementById('question').dataset.correctAnswer);
+            if (Math.abs(userAnswer - correctAnswer) < 1) {
+                document.getElementById('feedback').innerText = "✅ Correct! Increasing difficulty...";
+                difficulty++;
+                generateQuestion();
+            } else {
+                document.getElementById('feedback').innerText = "❌ Incorrect, try again.";
+            }
+            document.getElementById('answer').value = "";
+        }
+        
+        generateQuestion();
+    </script>
+</body>
+</html>

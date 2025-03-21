@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Quest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #1488CC, #2B32B2);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-top: 20px;
+        }
+        #game-container {
+            background: white;
+            color: black;
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+        #question {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        canvas {
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            border: 1px solid black;
+            background: white;
+            display: block;
+            margin: auto;
+        }
+        #answer-input {
+            font-size: 1.5em;
+            padding: 10px;
+            width: 100px;
+            text-align: center;
+            border: 2px solid black;
+            border-radius: 5px;
+        }
+        #submit-btn {
+            font-size: 1.5em;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #submit-btn:hover {
+            background: #218838;
+        }
+        #score, #timer {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        #back-btn {
+    font-size: 1.2em;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    background: #ff6f61; /* Soft Coral */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#back-btn:hover {
+    background: #e85a4f; /* Darker Coral */
+    transform: scale(1.05);
+}
+
+    </style>
+</head>
+<body>
+
+    <h1>🔢 Geometry Quest 🏆</h1>
+    <div id="game-container">
+        <div id="question">Press Start to Begin!</div>
+        <canvas id="diagram" width="350" height="250"></canvas>
+        <br>
+        <input type="number" id="answer-input" placeholder="?" />
+        <br>
+        <button id="submit-btn">Submit Answer</button>
+        <div id="score">Score: 0</div>
+        <div id="timer">Time Left: 30s</div>
+    </div>
+    <button id="back-btn">Back</button>
+
+
+    <script>
+
+document.getElementById("back-btn").addEventListener("click", function() {
+    window.location.href = "math.html";
+});
+
+        const questionElement = document.getElementById("question");
+        const answerInput = document.getElementById("answer-input");
+        const submitBtn = document.getElementById("submit-btn");
+        const scoreElement = document.getElementById("score");
+        const timerElement = document.getElementById("timer");
+        const canvas = document.getElementById("diagram");
+        const ctx = canvas.getContext("2d");
+
+        let score = 0;
+        let questionTimer;
+        let currentAnswer = 0;
+        let timeLeft = 30;
+
+        function drawTriangle(angle1, angle2) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(50, 200);
+            ctx.lineTo(300, 200);
+            ctx.lineTo(175, 50);
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.font = "16px Arial";
+            ctx.fillText(angle1 + "°", 60, 220);
+            ctx.fillText(angle2 + "°", 270, 220);
+            ctx.fillText("?", 170, 40);
+        }
+
+        function drawCircle(radius) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(175, 125, 50, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.fillText("r = " + radius, 190, 190);
+            ctx.moveTo(125, 125);
+            ctx.lineTo(225, 125);
+            ctx.stroke();
+            ctx.fillText("?", 170, 110);
+        }
+
+        function drawRectangle(length, width) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeRect(100, 50, length * 10, width * 10);
+            ctx.fillText("L = " + length, 120, 40);
+            ctx.fillText("W = " + width, 250, 40);
+            ctx.fillText("?", 180, 120);
+        }
+
+        function generateQuestion() {
+            clearInterval(questionTimer); // Reset previous timer
+            timeLeft = 30;
+            timerElement.innerText = `Time Left: ${timeLeft}s`;
+
+            let type = Math.floor(Math.random() * 3); // Random question type
+            let question = "";
+            
+            if (type === 0) {
+                let angle1 = Math.floor(Math.random() * 90) + 10;
+                let angle2 = Math.floor(Math.random() * (180 - angle1 - 10)) + 10;
+                currentAnswer = 180 - (angle1 + angle2);
+                question = `Find the third angle of a triangle with angles ${angle1}° and ${angle2}°`;
+                drawTriangle(angle1, angle2);
+            } else if (type === 1) {
+                let radius = Math.floor(Math.random() * 20) + 1;
+                currentAnswer = radius * 2;
+                question = `Find the diameter of a circle with radius ${radius}`;
+                drawCircle(radius);
+            } else if (type === 2) {
+                let length = Math.floor(Math.random() * 10) + 5;
+                let width = Math.floor(Math.random() * 10) + 5;
+                currentAnswer = length * width;
+                question = `Find the area of a rectangle with length ${length} and width ${width}`;
+                drawRectangle(length, width);
+            }
+
+            questionElement.innerText = question;
+            answerInput.value = "";
+
+            let speech = new SpeechSynthesisUtterance(question);
+            speech.lang = "en-US";
+            window.speechSynthesis.speak(speech);
+
+            questionTimer = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = `Time Left: ${timeLeft}s`;
+                if (timeLeft === 0) {
+                    clearInterval(questionTimer);
+                    alert("Time's up! Moving to the next question.");
+                    generateQuestion();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer() {
+            let userAnswer = parseFloat(answerInput.value);
+            if (userAnswer === currentAnswer) {
+                score++;
+                scoreElement.innerText = `Score: ${score}`;
+                generateQuestion();
+            } else {
+                alert("Wrong answer! Try again.");
+            }
+        }
+
+        submitBtn.addEventListener("click", checkAnswer);
+        generateQuestion(); // Start game on load
+
+    </script>
+
+</body>
+</html>

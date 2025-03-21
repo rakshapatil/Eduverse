@@ -1,0 +1,162 @@
+<!-- cone.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cone</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            background-color: #1e1e2f;
+            color: white;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        #cone-container {
+            background-color: #ffcc00;
+            display: inline-block;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(255, 204, 0, 0.6);
+            margin-top: 20px;
+        }
+        h1 {
+            font-size: 36px;
+            color: #ffcc00;
+        }
+        p {
+            font-size: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #ff5733;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff3311;
+        }
+        #feedback {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 Cone Challenge 🎉</h1>
+    <p>This is a 3D Cone! Can you solve the math challenge?</p>
+    <div id="cone-container"></div>
+    <h2>Math Question 🧠</h2>
+    <p id="question">If the radius of a cone is 3 cm and the height is 5 cm, what is its volume?</p>
+    <input type="number" id="answer" placeholder="Enter your answer">
+    <button onclick="checkAnswer()">Submit</button>
+    <p id="feedback"></p>
+    <a href="math.html" style="color: #ffcc00; font-size: 18px;">🔙 Back to Shapes</a>
+
+    <script>
+        function createCone() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(400, 400);
+            document.getElementById('cone-container').appendChild(renderer.domElement);
+
+            const geometry = new THREE.ConeGeometry(1.5, 3, 32);
+            const material = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 100 });
+            const cone = new THREE.Mesh(geometry, material);
+            scene.add(cone);
+            
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(5, 5, 5);
+            scene.add(light);
+
+            camera.position.z = 5;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                cone.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+        createCone();
+    </script>
+    
+    <script>
+        let difficulty = 1;
+        let radius = 3;
+        let height = 5;
+        
+        function generateQuestion() {
+    let questionType = Math.floor(Math.random() * 6); // Randomly choose a question type
+    let radius = Math.floor(Math.random() * (5 * difficulty)) + 2;
+    let height = Math.floor(Math.random() * (5 * difficulty)) + 2;
+    let slantHeight = Math.sqrt(radius ** 2 + height ** 2); // Pythagoras theorem for slant height
+    let questionText = "";
+    let correctAnswer = 0;
+    const pi = Math.PI;
+
+    switch (questionType) {
+        case 0: // Volume Question
+            questionText = `If a cone has a radius of ${radius} cm and a height of ${height} cm, what is its volume?`;
+            correctAnswer = (1 / 3) * pi * (radius ** 2) * height;
+            break;
+        case 1: // Surface Area Question
+            questionText = `If a cone has a radius of ${radius} cm and a height of ${height} cm, what is its total surface area?`;
+            correctAnswer = pi * radius * (radius + slantHeight);
+            break;
+        case 2: // Perimeter of Base (Circumference) Question
+            questionText = `If a cone has a radius of ${radius} cm, what is the perimeter (circumference) of its base?`;
+            correctAnswer = 2 * pi * radius;
+            break;
+        case 3: // Reverse Volume Question
+            let volume = (1 / 3) * pi * (radius ** 2) * height;
+            questionText = `If the volume of a cone is ${volume.toFixed(2)} cm³ and its height is ${height} cm, what is its radius?`;
+            correctAnswer = Math.sqrt((3 * volume) / (pi * height));
+            break;
+        case 4: // Reverse Surface Area Question
+            let surfaceArea = pi * radius * (radius + slantHeight);
+            questionText = `If the total surface area of a cone is ${surfaceArea.toFixed(2)} cm² and its height is ${height} cm, what is its radius?`;
+            correctAnswer = (surfaceArea / (pi * (radius + slantHeight))).toFixed(2);
+            break;
+        case 5: // Reverse Perimeter Question
+            let perimeter = 2 * pi * radius;
+            questionText = `If the perimeter (circumference) of a cone’s base is ${perimeter.toFixed(2)} cm, what is its radius?`;
+            correctAnswer = perimeter / (2 * pi);
+            break;
+    }
+
+    document.getElementById('question').innerText = questionText;
+    document.getElementById('question').dataset.correctAnswer = correctAnswer.toFixed(2);
+}
+
+        
+        function checkAnswer() {
+            const userAnswer = parseFloat(document.getElementById('answer').value);
+            const correctAnswer = parseFloat(document.getElementById('question').dataset.correctAnswer);
+            if (userAnswer.toFixed(2) == correctAnswer.toFixed(2)) {
+                document.getElementById('feedback').innerText = "✅ Correct! Increasing difficulty...";
+                difficulty++;
+                generateQuestion();
+            } else {
+                document.getElementById('feedback').innerText = "❌ Incorrect, try again.";
+            }
+            document.getElementById('answer').value = "";
+        }
+        
+        generateQuestion();
+    </script>
+</body>
+</html>
